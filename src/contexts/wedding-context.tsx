@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/auth-context";
 import {
   profileFromRow,
   profileToInsert,
@@ -97,6 +98,7 @@ interface WeddingContextValue {
 const WeddingContext = createContext<WeddingContextValue | null>(null);
 
 export function WeddingProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [profileId, setProfileId] = useState<string | null>(null);
@@ -111,9 +113,15 @@ export function WeddingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     async function load() {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
       const { data } = await supabase
         .from("wedding_profiles")
         .select("*")
+        .eq("user_id", user.id)
         .eq("onboarding_complete", true)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -147,11 +155,12 @@ export function WeddingProvider({ children }: { children: ReactNode }) {
     }
 
     load();
-  }, []);
+  }, [user]);
 
   const completeOnboarding = useCallback(
     async (p: WeddingProfile, persp: Perspective, events: EventCategory[]) => {
-      const insertData = profileToInsert(p, persp, events);
+      if (!user) return;
+      const insertData = { ...profileToInsert(p, persp, events), user_id: user.id };
       const result = await supabase
         .from("wedding_profiles")
         .insert(insertData)
@@ -170,7 +179,7 @@ export function WeddingProvider({ children }: { children: ReactNode }) {
       setSelectedEvents(profileRow.selected_events as EventCategory[]);
       setOnboardingComplete(true);
     },
-    []
+    [user]
   );
 
   const updateProfile = useCallback(

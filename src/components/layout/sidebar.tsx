@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { PerspectiveToggle } from "@/components/ui/perspective-toggle";
+import { useAuth } from "@/contexts/auth-context";
 import {
   LayoutDashboard,
   Wallet,
@@ -13,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Heart,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -26,6 +28,7 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -67,6 +70,26 @@ export function Sidebar() {
 
       <div className="border-t border-border p-3 space-y-3">
         {!collapsed && <PerspectiveToggle />}
+
+        {!collapsed && user && (
+          <div className="rounded-lg bg-muted px-3 py-2">
+            <p className="truncate text-xs font-medium text-foreground">
+              {user.email}
+            </p>
+          </div>
+        )}
+
+        <button
+          onClick={signOut}
+          className={cn(
+            "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors",
+            collapsed && "justify-center"
+          )}
+        >
+          <LogOut size={18} className="shrink-0" />
+          {!collapsed && <span>Sign Out</span>}
+        </button>
+
         <button
           onClick={() => setCollapsed((c) => !c)}
           className="flex w-full items-center justify-center rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"

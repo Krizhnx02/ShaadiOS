@@ -4,6 +4,7 @@ export interface Database {
       wedding_profiles: {
         Row: {
           id: string;
+          user_id: string;
           bride_name: string;
           groom_name: string;
           wedding_date: string;
@@ -19,6 +20,7 @@ export interface Database {
         };
         Insert: {
           id?: string;
+          user_id: string;
           bride_name: string;
           groom_name: string;
           wedding_date: string;
@@ -34,6 +36,7 @@ export interface Database {
         };
         Update: {
           id?: string;
+          user_id?: string;
           bride_name?: string;
           groom_name?: string;
           wedding_date?: string;

@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, type ReactNode } from "react";
-import { useWedding } from "@/contexts/wedding-context";
+import { useAuth } from "@/contexts/auth-context";
+import { WeddingProvider, useWedding } from "@/contexts/wedding-context";
+import { AuthPage } from "@/features/auth/auth-page";
 import { OnboardingFlow } from "@/features/onboarding/onboarding-flow";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import type { OnboardingData } from "@/features/onboarding/types";
@@ -11,7 +13,7 @@ interface AppShellProps {
   children: ReactNode;
 }
 
-export function AppShell({ children }: AppShellProps) {
+function AuthenticatedShell({ children }: { children: ReactNode }) {
   const { isLoading, onboardingComplete, completeOnboarding } = useWedding();
 
   const handleOnboardingComplete = useCallback(
@@ -33,7 +35,6 @@ export function AppShell({ children }: AppShellProps) {
       };
 
       const perspective: Perspective = finalData.userSide ?? "all";
-
       completeOnboarding(profile, perspective, finalData.selectedEvents);
     },
     [completeOnboarding]
@@ -56,4 +57,30 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   return <DashboardLayout>{children}</DashboardLayout>;
+}
+
+export function AppShell({ children }: AppShellProps) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-dvh items-center justify-center bg-background">
+        <div className="animate-pulse text-center">
+          <p className="text-lg font-bold tracking-tight">
+            Shaadi<span className="text-accent-gold">OS</span>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
+  return (
+    <WeddingProvider>
+      <AuthenticatedShell>{children}</AuthenticatedShell>
+    </WeddingProvider>
+  );
 }
