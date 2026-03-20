@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { EVENT_META } from "@/lib/constants/events";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useWeddingData } from "@/hooks/useWeddingData";
 import { cn } from "@/lib/utils";
 import type { EventCategory, Guest, GuestRsvpStatus } from "@/lib/types/wedding";
 
@@ -31,7 +31,7 @@ interface GuestModalProps {
 }
 
 export function GuestModal({ isOpen, onClose, onAdd, editingGuest, onUpdate }: GuestModalProps) {
-  const [savedEvents] = useLocalStorage<EventCategory[]>("shaadios-events", []);
+  const { selectedEvents: savedEvents } = useWeddingData();
   const [selectedEvents, setSelectedEvents] = useState<EventCategory[]>([]);
 
   const { control, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { EVENT_META, PRIORITY_CONFIG } from "@/lib/constants/events";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useWeddingData } from "@/hooks/useWeddingData";
 import type { EventCategory, Task } from "@/lib/types/wedding";
 
 const schema = z.object({
@@ -33,7 +33,7 @@ interface TaskModalProps {
 }
 
 export function TaskModal({ isOpen, onClose, onAdd, editingTask, onUpdate }: TaskModalProps) {
-  const [events] = useLocalStorage<EventCategory[]>("shaadios-events", []);
+  const { selectedEvents: events } = useWeddingData();
   const { control, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {

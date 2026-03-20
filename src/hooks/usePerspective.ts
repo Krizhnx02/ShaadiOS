@@ -1,25 +1,13 @@
 "use client";
 
-import { useLocalStorage } from "./useLocalStorage";
-import type { Perspective, FamilySide } from "@/lib/types/wedding";
+import { useWedding } from "@/contexts/wedding-context";
 
 export function usePerspective() {
-  const [perspective, setPerspective] = useLocalStorage<Perspective>(
-    "shaadios-perspective",
-    "all"
-  );
-
-  const isVisible = (side: FamilySide): boolean => {
-    if (perspective === "all") return true;
-    if (side === "shared") return true;
-    return side === perspective;
+  const ctx = useWedding();
+  return {
+    perspective: ctx.perspective,
+    setPerspective: ctx.setPerspective,
+    isVisible: ctx.isVisible,
+    isBlurred: ctx.isBlurred,
   };
-
-  const isBlurred = (side: FamilySide): boolean => {
-    if (perspective === "all") return false;
-    if (side === "shared") return false;
-    return side !== perspective;
-  };
-
-  return { perspective, setPerspective, isVisible, isBlurred };
 }

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { BUDGET_CATEGORY_LABELS, EVENT_META } from "@/lib/constants/events";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useWeddingData } from "@/hooks/useWeddingData";
 import type { EventCategory, BudgetCategory, BudgetItem } from "@/lib/types/wedding";
 
 const schema = z.object({
@@ -32,7 +32,7 @@ interface BudgetModalProps {
 }
 
 export function BudgetModal({ isOpen, onClose, onAdd, editingItem, onUpdate }: BudgetModalProps) {
-  const [events] = useLocalStorage<EventCategory[]>("shaadios-events", []);
+  const { selectedEvents: events } = useWeddingData();
   const { control, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { title: "", category: "", side: "shared", event: "", estimatedCost: "", actualCost: "", notes: "" },
